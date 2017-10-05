@@ -1,8 +1,8 @@
 # Scripts
 This repo contains the following scripts
 
-## Update-PowerShell.ps1
-The `Update-PowerShell.ps1` script is used to update the installed version of
+## Upgrade-PowerShell.ps1
+The `Upgrade-PowerShell.ps1` script is used to upgrade the installed version of
 PowerShell on a Windows host to a newer version. Ansible requires at least
 version `3.0` to be install but some modules may require a newer version.
 
@@ -39,15 +39,15 @@ require the user to log back in manually after the reboot before
 continuing.
 
 A log of this process is created in
-`$env:SystemDrive\temp\update_powershell.log` which is usually `C:\temp\`. This
-log can used to see how the script ran after an automatic reboot.
+`$env:SystemDrive\temp\upgrade_powershell.log` which is usually `C:\temp\`.
+This log can used to see how the script ran after an automatic reboot.
 
 To run this script from any version of PowerShell, the following commands can
 be run
 
 ```PowerShell
-$url = "https://raw.githubusercontent.com/jborean93/ansible-windows/master/scripts/Update-PowerShell.ps1"
-$file = "$env:SystemDrive\temp\Update-PowerShell.ps1"
+$url = "https://raw.githubusercontent.com/jborean93/ansible-windows/master/scripts/Upgrade-PowerShell.ps1"
+$file = "$env:SystemDrive\temp\Upgrade-PowerShell.ps1"
 $username = "Administrator"
 $password = "Password"
 

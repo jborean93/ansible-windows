@@ -36,9 +36,9 @@ details.
 .PARAMETER Verbose
     [switch] - Whether to display Verbose logs on the console
 .EXAMPLE
-    powershell.exe -ExecutionPolicy ByPass -File winrm_hotfix.ps1
+    powershell.exe -ExecutionPolicy ByPass -File Install-WMF3Hotfix.ps1
 .EXAMPLE
-    powershell.exe -ExecutionPolicy ByPass -File winrm_hotfix.ps1 -Verbose
+    powershell.exe -ExecutionPolicy ByPass -File Install-WMF3Hotfix.ps1 -Verbose
 #>
 
 [CmdletBinding()]

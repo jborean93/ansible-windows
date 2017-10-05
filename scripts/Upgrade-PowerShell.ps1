@@ -51,7 +51,7 @@ require the user to log back in manually after the reboot before
 continuing.
 
 A log of this process is created in
-$env:SystemDrive\temp\update_powershell.log which is usually C:\temp\. This
+$env:SystemDrive\temp\upgrade_powershell.log which is usually C:\temp\. This
 log can used to see how the script faired after an automatic reboot.
 
 See https://github.com/jborean93/ansible-windows/tree/master/scripts for more
@@ -75,13 +75,13 @@ details.
 .EXAMPLE
     # upgrade from powershell 1.0 to 3.0 with automatic login and reboots
     Set-ExecutionPolicy Unrestricted -Force
-    &.\update_powershell.ps1 -version 3.0 -username "Administrator" -password "Password" -Verbose
+    &.\Upgrade-PowerShell.ps1 -version 3.0 -username "Administrator" -password "Password" -Verbose
 .EXAMPLE
     # upgrade to 5.1 with defaults and manual login and reboots
-    powershell.exe -ExecutionPolicy ByPass -File winrm_hotfix.ps1
+    powershell.exe -ExecutionPolicy ByPass -File Upgrade-PowerShell.ps1
 .EXAMPLE
     # upgrade to powershell 4.0 with automatic login and reboots
-    powershell.exe -ExecutionPolicy ByPass -File winrm_hotfix.ps1 -version 4.0 -username "Administrator" -password "Password" -Verbose
+    powershell.exe -ExecutionPolicy ByPass -File Upgrade-PowerShell.ps1 -version 4.0 -username "Administrator" -password "Password" -Verbose
 #>
 Param(
     [string]$version = "5.1",
@@ -103,7 +103,7 @@ Function Write-Log($message, $level="INFO") {
     # Poor man's implementation of Log4Net
     $date_stamp = Get-Date -Format s
     $log_entry = "$date_stamp - $level - $message"
-    $log_file = "$tmp_dir\update_powershell.log"
+    $log_file = "$tmp_dir\upgrade_powershell.log"
     Write-Verbose -Message $log_entry
     Add-Content -Path $log_file -Value $log_entry
 }

@@ -45,7 +45,7 @@ log can used to see how the script ran after an automatic reboot.
 To run this script from any version of PowerShell, the following commands can
 be run
 
-```ps
+```PowerShell
 $url = "https://raw.githubusercontent.com/jborean93/ansible-windows/master/scripts/Update-PowerShell.ps1"
 $file = "$env:SystemDrive\temp\Update-PowerShell.ps1"
 $username = "Administrator"
@@ -58,16 +58,11 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Force
 &$file -Version 5.1 -Username $username -Password $password -Verbose
 ```
 
-<aside class="warning">
 When setting `username` or `password`, these values are stored in plaintext in
 the registry until the script is complete. Be sure to run the script below to
 clear them out.
-</aside>
 
-The following code should be run afterwards to ensure it, any credentials or
-insecure changes have been reverted.
-
-```ps
+```PowerShell
 # this isn't needed but is a good security practice to complete
 Set-ExecutionPolicy -ExecutionPolicy Restricted -Force
 
@@ -99,7 +94,7 @@ or whether it will be done later.
 
 To run this script, the following commands can be run:
 
-```ps
+```PowerShell
 $url = "https://raw.githubusercontent.com/jborean93/ansible-windows/master/scripts/Install-WMF3Hotfix.ps1"
 $file = "$env:SystemDrive\temp\Install-WMF3Hotfix.ps1"
 

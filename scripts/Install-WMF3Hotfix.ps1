@@ -30,6 +30,9 @@ The script will;
 Once the install is complete, if the install process returns an exit
 code of 3010, it will ask the user whether to restart the computer now
 or whether it will be done later.
+
+See https://github.com/jborean93/ansible-windows/tree/master/scripts for more
+details.
 .PARAMETER Verbose
     [switch] - Whether to display Verbose logs on the console
 .EXAMPLE

@@ -53,6 +53,9 @@ continuing.
 A log of this process is created in
 $env:SystemDrive\temp\update_powershell.log which is usually C:\temp\. This
 log can used to see how the script faired after an automatic reboot.
+
+See https://github.com/jborean93/ansible-windows/tree/master/scripts for more
+details.
 .PARAMETER version
     [string] - The target powershell version to upgrade to. This can be;
         3.0,

@@ -16,12 +16,12 @@ all:
         SERVER2012:
           ansible_host: 192.168.56.203
           vagrant_box: jborean93/WindowsServer2012
-        #SERVER2012R2:
-        #  ansible_host: 192.168.56.204
-        #  vagrant_box: jborean93/WindowsServer2012R2
-        #SERVER2016:
-        #  ansible_host: 192.168.56.205
-        #  vagrant_box: jborean93/WindowsServer2016
+        SERVER2012R2:
+          ansible_host: 192.168.56.204
+          vagrant_box: jborean93/WindowsServer2012R2
+        SERVER2016:
+          ansible_host: 192.168.56.205
+          vagrant_box: jborean93/WindowsServer2016
   vars:
     ansible_user: vagrant
     ansible_password: vagrant

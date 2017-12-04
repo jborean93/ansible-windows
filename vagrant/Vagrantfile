@@ -1,0 +1,60 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Require YAML module
+require 'yaml'
+ 
+# Read YAML file with box details
+inventory = YAML.load_file('inventory.yml')
+
+domain_children_count = inventory['all']['children']['domain_children']['hosts'].keys.count
+current_host = 1
+
+Vagrant.configure("2") do |config|
+  config.vm.define "dc" do |dc|
+    inventory['all']['children']['controller']['hosts'].each do |server,details|
+      dc.vm.box = details['vagrant_box']
+      dc.vm.hostname = server
+      dc.vm.network :private_network, ip: details['ansible_host']
+      inventory['all']['vars']['vagrant_ports'].each do |protocol,details|
+        dc.vm.network :forwarded_port, guest: details['guest'], host: details['host'], id: protocol
+      end
+
+      dc.vm.provider :virtualbox do |v|
+        v.name = File.basename(File.dirname(__FILE__)) + "_" + server + "_" + Time.now.to_i.to_s
+        v.gui = false
+        v.memory = 2048
+        v.cpus = 2
+      end
+    end
+  end
+
+  inventory['all']['children']['domain_children']['hosts'].each do |server,details|
+    config.vm.define server do |srv|
+      srv.vm.box = details['vagrant_box']
+      srv.vm.hostname = server
+      srv.vm.network :private_network, ip: details['ansible_host']
+      inventory['all']['vars']['vagrant_ports'].each do |protocol, details|
+        srv.vm.network :forwarded_port, guest: details['guest'], host: details['host'] + current_host, id: protocol
+      end
+
+      srv.vm.provider :virtualbox do |v|
+        v.name = File.basename(File.dirname(__FILE__)) + "_" + server + "_" + Time.now.to_i.to_s
+        v.gui = false
+        v.memory = 2048
+        v.cpus = 2
+      end
+
+      if current_host == domain_children_count then
+        config.vm.provision "ansible" do |ansible|
+          ansible.playbook = "playbook.yml"
+          ansible.limit = "all"
+          ansible.inventory_path = "inventory.yml"
+          ansible.verbose = "-vv"
+        end
+      end
+      current_host = current_host + 1
+    end
+  end
+end
+

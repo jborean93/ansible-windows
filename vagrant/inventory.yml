@@ -1,0 +1,55 @@
+all:
+  children:
+    controller:
+      hosts:
+        DC01:
+          ansible_host: 192.168.56.200
+          vagrant_box: jborean93/WindowsServer2016
+    domain_children:
+      hosts:
+        SERVER2008:
+          ansible_host: 192.168.56.201
+          vagrant_box: jborean93/WindowsServer2008-x64
+        SERVER2008R2:
+          ansible_host: 192.168.56.202
+          vagrant_box: jborean93/WindowsServer2008R2
+        SERVER2012:
+          ansible_host: 192.168.56.203
+          vagrant_box: jborean93/WindowsServer2012
+        #SERVER2012R2:
+        #  ansible_host: 192.168.56.204
+        #  vagrant_box: jborean93/WindowsServer2012R2
+        #SERVER2016:
+        #  ansible_host: 192.168.56.205
+        #  vagrant_box: jborean93/WindowsServer2016
+  vars:
+    ansible_user: vagrant
+    ansible_password: vagrant
+    ansible_connection: winrm
+    ansible_port: 5986
+    ansible_winrm_transport: basic
+    ansible_winrm_server_cert_validation: ignore
+    domain_name: domain.local
+    domain_safe_mode_password: VagrantPass1
+    domain_user_name: vagrant-domain
+    domain_user_pass: VagrantPass1
+    # used by Vagrant for port forwarding
+    # the format is 29xyy where x is the protocol and
+    # yy is the number of the host.
+    vagrant_ports:
+      rdp:
+        guest: 3389
+        host: 29500
+      ssh:
+        guest: 22
+        host: 29600
+      winrm_http:
+        guest: 5985
+        host: 29700
+      winrm_https:
+        guest: 5986
+        host: 29800
+      smb:
+        guest: 445
+        host: 29900
+

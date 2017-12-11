@@ -3,24 +3,24 @@ all:
     controller:
       hosts:
         DC01:
-          ansible_host: 192.168.56.200
+          ansible_host: 192.168.56.10
           vagrant_box: jborean93/WindowsServer2016
     domain_children:
       hosts:
         SERVER2008:
-          ansible_host: 192.168.56.201
+          ansible_host: 192.168.56.11
           vagrant_box: jborean93/WindowsServer2008-x64
         SERVER2008R2:
-          ansible_host: 192.168.56.202
+          ansible_host: 192.168.56.12
           vagrant_box: jborean93/WindowsServer2008R2
         SERVER2012:
-          ansible_host: 192.168.56.203
+          ansible_host: 192.168.56.13
           vagrant_box: jborean93/WindowsServer2012
         SERVER2012R2:
-          ansible_host: 192.168.56.204
+          ansible_host: 192.168.56.14
           vagrant_box: jborean93/WindowsServer2012R2
         SERVER2016:
-          ansible_host: 192.168.56.205
+          ansible_host: 192.168.56.15
           vagrant_box: jborean93/WindowsServer2016
   vars:
     ansible_user: vagrant

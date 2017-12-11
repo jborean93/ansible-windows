@@ -47,7 +47,7 @@ Vagrant.configure("2") do |config|
 
       if current_host == domain_children_count then
         config.vm.provision "ansible" do |ansible|
-          ansible.playbook = "playbook.yml"
+          ansible.playbook = "main.yml"
           ansible.limit = "all"
           ansible.inventory_path = "inventory.yml"
           ansible.verbose = "-vv"

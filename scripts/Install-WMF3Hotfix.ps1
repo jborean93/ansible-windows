@@ -42,9 +42,7 @@ details.
 #>
 
 [CmdletBinding()]
-Param(
-    [switch]$verbose
-)
+Param()
 
 $ErrorActionPreference = "Stop"
 if ($verbose) {

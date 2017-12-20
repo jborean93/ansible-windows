@@ -11,7 +11,7 @@ for you.
 The majority of the configuration is done in `inventory.yml`, each host
 configured must have the following vars defined;
 
-* `ansible_host`:
+* `ansible_host`: The IP address to set on the host only network adapater of the VM
 * `ansible_package_name`: The name of the package manager to use, current only `apt`, `yum`, and `dnf` are configured.
 * `vagrant_box`: The name of the box to use as the source of machine
 

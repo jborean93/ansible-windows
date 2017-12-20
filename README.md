@@ -8,3 +8,17 @@ Further scripts and utilities may be added in the future as required.
 There are a few scripts in the `scripts` folder that can be used to do things
 like upgrade PowerShell to a certain version. The README page of that folder
 has more details on each script and how to run them.
+
+## Vagrant
+
+Contains a Vagrantfile and Ansible playbook that will create a dev environment
+of multiple Windows servers in a domain. See the README page for more details.
+
+## Vagrant Linux
+
+Contains a Vagrantfile and Ansible playbook that will create a dev environment
+of multiple Linux servers that can communicate with the domain created by the
+files in the `vagrant` folder. This is useful if you want to test out things
+like Kerberos authentication with Ansible without polluting your localhost.
+
+See the README page for more details.

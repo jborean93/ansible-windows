@@ -1,0 +1,29 @@
+all:
+  children:
+    domain_children:
+      hosts:
+        UBUNTU1604:
+          ansible_host: 192.168.56.21
+          ansible_python_interpreter: /usr/bin/python3
+          vagrant_box: ubuntu/xenial64
+          ansible_package_name: 'apt'
+        CENTOS7:
+          ansible_host: 192.168.56.22
+          vagrant_box: centos/7
+          ansible_package_name: 'yum'
+        FEDORA27:
+          ansible_host: 192.168.56.23
+          vagrant_box: generic/fedora27
+          ansible_package_name: 'dnf'
+  vars:
+    man_user_setup_user: ansible
+    # hashed form of the password: ansible
+    man_user_setup_enc_pass: '$6$OpPwep0n4zujElhs$gWIk6yiEIYVg9h8rcs.Nq8fgas0TSgC/3Wc.Y2SHhvtFfO74Kc63RNaZBY119UAc7kfg1MEbkCIzTod2ksedp1'
+    man_user_setup_ssh_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7zoTeDWENzfCBvlqpEJoQdsGHGlP/CeC1UIpaB31WJWnkmWSrHltzw8xVD6m2dn0ZGZxlqGX1awCnWao2zQPAYpOAuReTV7RpT9+ehSfREwbGMYO22kqSITw19ZTCvqZSM1bxirdgreJ7cM7/wFcVc7WUphccFA72V2giNhyNCQU5IQbBGIjODsE6Tmfk4DUkLwRjf9GOriJQY7L11Vn1Of8bRfqKv7E7s6QpvVnnNty2CsocGR07CGQDCL379+5TQJElPsLSajk/TV42+yUDdmYupugtvOkSaBlQLb2wbP6WMmS5JTPLVgHVQKF23kRhW/K0PIbyEecoLDze1dQ5
+    man_user_setup_group: ansible-admin
+    man_kerberos_realm: domain.local
+    man_kerberos_kdc_ip: 192.168.56.10
+    man_kerberos_kdc_hostname: dc01
+    python2_version: 2.7.14
+    python3_version: 3.6.3
+

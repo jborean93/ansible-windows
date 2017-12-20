@@ -1,0 +1,32 @@
+---
+- name: assert mandatory variables are set
+  assert:
+    that:
+    - man_user_setup_group is defined
+    - man_user_setup_user is defined
+    - man_user_setup_enc_pass is defined
+    - man_user_setup_ssh_key is defined
+
+- name: create admin group
+  group:
+    name: '{{man_user_setup_group}}'
+    state: present
+
+- name: create user
+  user:
+    name: '{{man_user_setup_user}}'
+    password: '{{man_user_setup_enc_pass}}'
+    state: present
+    group: '{{man_user_setup_group}}'
+
+- name: add ssh public key to user
+  authorized_key:
+    user: '{{man_user_setup_user}}'
+    key: '{{man_user_setup_ssh_key}}'
+
+- name: add admin group to sudoers
+  lineinfile:
+    path: /etc/sudoers
+    regexp: '^%{{man_user_setup_group}}'
+    line: '%{{man_user_setup_group}} ALL=(ALL) NOPASSWD:ALL'
+

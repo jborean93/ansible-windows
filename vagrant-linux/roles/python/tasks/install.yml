@@ -1,0 +1,46 @@
+---
+- name: create temp Python dir
+  file:
+    path: /tmp/python-install
+    state: directory
+    mode: 0777
+
+- name: download Python tar
+  get_url:
+    url: https://www.python.org/ftp/python/{{man_python_version}}/Python-{{man_python_version}}.tgz
+    dest: /tmp/python-install/Python-{{man_python_version}}.tgz
+
+- name: extract Python tar
+  unarchive:
+    src: /tmp/python-install/Python-{{man_python_version}}.tgz
+    dest: /tmp/python-install
+    remote_src: yes
+
+- name: set enable optimizations fact if Python version supports it
+  set_fact:
+    pri_python_configure_args: ' --enable-optimizations'
+  when: man_python_version[:3] == "2.7" or man_python_version[:3] == "3.6"
+
+- name: configure Python
+  shell: ./configure{{pri_python_configure_args|default('')}}
+  args:
+    chdir: /tmp/python-install/Python-{{man_python_version}}
+
+- name: install Python
+  shell: make && make altinstall
+  args:
+    chdir: /tmp/python-install/Python-{{man_python_version}}
+
+- name: download get-pip.py for pip install
+  get_url:
+    url: https://bootstrap.pypa.io/get-pip.py
+    dest: /tmp/python-install/get-pip.py
+
+- name: install pip
+  command: /usr/local/bin/python{{man_python_version[:3]}} /tmp/python-install/get-pip.py
+
+- name: cleanup install artifacts
+  file:
+    path: /tmp/python-install
+    state: absent
+

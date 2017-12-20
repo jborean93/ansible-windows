@@ -1,0 +1,40 @@
+---
+- name: setup Linux host to connect to the domain
+  hosts: all
+  become: yes
+  gather_facts: no
+  pre_tasks:
+  - name: wait for connection to come online
+    wait_for_connection:
+
+  - name: make sure git and vim is installed
+    package:
+      name:
+      - vim
+      - git
+      state: present
+
+  - name: make sure libselinux-python is installed for dnf
+    dnf:
+      name: libselinux-python
+      state: present
+    when: ansible_package_name == 'dnf'
+
+  roles:
+  - role: user-setup
+  - role: kerberos
+  - role: python
+    vars:
+      man_python_version: '{{python2_version}}'
+  - role: python
+    vars:
+      man_python_version: '{{python3_version}}'
+
+- name: setup pip and Ansible for the ansible user
+  hosts: all
+  become: yes
+  become_user: '{{man_user_setup_user}}'
+  gather_facts: no
+  roles:
+  - ansible-setup
+

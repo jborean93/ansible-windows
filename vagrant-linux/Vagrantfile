@@ -1,0 +1,29 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+require 'yaml'
+
+inventory = YAML.load_file('inventory.yml')
+
+Vagrant.configure("2") do |config|
+  inventory['all']['children']['domain_children']['hosts'].each do |server,details|
+    config.vm.define server do |srv|
+      srv.vm.box = details['vagrant_box']
+      srv.vm.hostname = server
+      srv.vm.network :private_network, ip: details['ansible_host']
+
+      srv.vm.provider :virtualbox do |v|
+        v.name = File.basename(File.dirname(__FILE__)) + "_" + server + "_" + Time.now.to_i.to_s
+        v.gui = false
+        v.memory = 1024
+        v.cpus = 1
+      end
+    end
+  end
+
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "main.yml"
+    ansible.inventory_path = "inventory.yml"
+    ansible.verbose = "-vv"
+  end
+end

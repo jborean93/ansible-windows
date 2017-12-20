@@ -1,0 +1,89 @@
+---
+- name: assert mandatory variable are set
+  assert:
+    that:
+    - man_python_version is defined
+
+- name: make sure RHEL/Centos packages required for Python compiling are installed
+  yum:
+    name:
+    - gcc
+    - zlib-devel
+    - openssl-devel
+    - sqlite-devel
+    - bzip2-devel
+    - readline-devel
+    - libselinux-python
+    state: present
+  when: ansible_package_name == 'yum'
+
+- name: make sure Fedora packages required for Python compiling are installed
+  dnf:
+    name:
+    - gcc
+    - zlib-devel
+    - openssl-devel
+    - sqlite-devel
+    - bzip2-devel
+    - readline-devel
+    - '{% if man_python_version[:1] == 2 %}libselinux-python{% else %}libselinux-python3{% endif %}'
+  when: ansible_package_name == 'dnf'
+
+- name: make sure Debian packages required for Python compiling are installed
+  apt:
+    name:
+    - gcc
+    - python-dev
+    - libffi-dev
+    - build-essential
+    - libssl-dev
+    - zlib1g-dev
+    - libbz2-dev
+    - '{% if man_python_version[:1] == 2 %}python-selinux{% else %}python3-selinux{% endif %}'
+    state: present
+  when: ansible_package_name == 'apt'
+
+- name: check if Python is installed
+  stat:
+    path: /usr/local/bin/python{{man_python_version[:3]}}
+  register: pri_python_install
+
+- name: install Python
+  include_tasks: install.yml
+  when: pri_python_install.stat.exists == False
+
+- name: ensure pip, setuptools, and virtualenv are up to date
+  pip:
+    name:
+    - pip
+    - setuptools
+    - virtualenv
+    state: latest
+    executable: /usr/local/bin/pip{{man_python_version[:3]}}
+
+# this probably needs more work but it is a start
+- name: check if the Python selinux bindings are available
+  stat:
+    path: /usr/lib64/python{{man_python_version[:3]}}/site-packages/selinux
+  register: selinux_bindings
+
+- name: find _selinux.so package
+  find:
+    paths: /usr/lib64/python{{man_python_version[:3]}}/site-packages
+    patterns: _selinux.*.so
+  register: selinux_find_results
+
+- name: symlink selinux package to new install
+  file:
+    src: /usr/lib64/python{{man_python_version[:3]}}/site-packages/selinux
+    dest: /usr/local/lib/python{{man_python_version[:3]}}/site-packages/selinux
+    state: link
+  when: selinux_bindings.stat.exists
+
+- name: symlink _selinux.so package
+  file:
+    src: '{{selinux_find_results.files[0].path}}'
+    dest: /usr/local/lib/python{{man_python_version[:3]}}/site-packages/{{selinux_find_results.files[0].path|basename}}
+    state: link
+  when: selinux_find_results.files|count > 0
+

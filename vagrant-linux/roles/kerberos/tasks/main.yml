@@ -1,0 +1,81 @@
+---
+- name: assert mandatory variables are set
+  assert:
+    that:
+    - man_kerberos_realm is defined
+    - man_kerberos_kdc_hostname is defined
+    - man_kerberos_kdc_ip is defined
+
+- name: ensure kerberos packages are installed for RHEL/Centos
+  yum:
+    name:
+    - krb5-devel
+    - krb5-workstation
+    - dnsmasq
+    state: present
+  when: ansible_package_name == 'yum'
+
+- name: ensure kerberos packages are installed for Fedora
+  dnf:
+    name:
+    - krb5-devel
+    - krb5-workstation
+    - dnsmasq
+    state: present
+  when: ansible_package_name == 'dnf'
+
+- name: ensure kerberos packages are installed for Debian
+  apt:
+    name:
+    - libkrb5-dev
+    - krb5-user
+    - dnsmasq
+    update_cache: yes
+    state: present
+  when: ansible_package_name == 'apt'
+
+- name: setup host entry for KDC
+  lineinfile:
+    path: /etc/hosts
+    line: '{{man_kerberos_kdc_ip}}  {{man_kerberos_kdc_hostname}}.{{man_kerberos_realm}} {{man_kerberos_kdc_hostname}}'
+
+- name: setup dnsmasq config
+  copy:
+    dest: /etc/dnsmasq.conf
+    content: |
+      server=/{{man_kerberos_realm}}/{{man_kerberos_kdc_ip}}
+      server=8.8.8.8
+      server=8.8.4.4
+      server=208.67.220.220
+      listen-address=127.0.0.1
+      domain-needed
+      bind-interfaces
+  register: pri_kerberos_dnsmasq_config
+
+- name: configure extra DNS settings for RHEL based distros
+  block:
+  - name: set localhost as dns server
+    copy:
+      dest: /etc/dhcp/dhclient.conf
+      content: prepend domain-name-servers 127.0.0.1;
+    register: dhclient_conf
+
+  - name: restart NetworkManager
+    service:
+      name: NetworkManager
+      state: restarted
+    when: dhclient_conf is changed
+
+  when: ansible_package_name == 'dnf' or ansible_package_name == 'yum'
+
+- name: restart dnsmasq after config setup
+  service:
+    name: dnsmasq
+    state: restarted
+  when: pri_kerberos_dnsmasq_config is changed
+
+- name: template krb5.conf file
+  template:
+    src: krb5.conf.tmpl
+    dest: /etc/krb5.conf
+

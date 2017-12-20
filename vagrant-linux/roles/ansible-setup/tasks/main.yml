@@ -1,0 +1,34 @@
+---
+- name: create virtualenv for Ansible
+  pip:
+    name:
+    - ansible
+    - pywinrm[kerberos,credssp]
+    state: latest
+    virtualenv: ~/ansible-py{{item.name}}
+    virtualenv_command: /usr/local/bin/virtualenv
+    virtualenv_python: '{{item.python}}'
+    virtualenv_site_packages: yes
+  with_items:
+  - name: 27
+    python: /usr/local/bin/python2.7
+  - name: 36
+    python: /usr/local/bin/python3.6
+
+- name: download ansible from source
+  git:
+    repo: https://github.com/ansible/ansible.git
+    dest: ~/ansible
+    version: devel
+    accept_hostkey: yes
+
+- name: ensure Ansible python 3 venv is set to run in bash profile
+  lineinfile:
+    path: ~/.bashrc
+    line: source ~/ansible-py36/bin/activate
+
+- name: ensure Ansible is activated in bash profile
+  lineinfile:
+    path: ~/.bashrc
+    line: source ~/ansible/hacking/env-setup -q
+

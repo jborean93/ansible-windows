@@ -99,4 +99,3 @@ Depending on the number of hosts you have defined in your `inventory.yml` file,
 the provisioning process can take some time to complete as Vagrant/VirtualBox
 does not support provisioning in parallel. Either give it more time or reduce
 the number of hosts that are defined in the `` section of the inventory.
-

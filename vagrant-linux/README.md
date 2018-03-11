@@ -23,16 +23,16 @@ Ultimately the final VM will have the following available
 
 * The latest checkout of the Ansible devel branch at the time of provisioning and added to `~/.bashrc` to activate on logon
 * A user called `ansible` with the password `ansible` created
-    * The user is added to the sudoers file and can sudo without a password
-    * An SSH public key is added to the `~/.ssh/authorized_keys` file based on the `man_user_setup_ssh_key` var
+  * The user is added to the sudoers file and can sudo without a password
+  * An SSH public key is added to the `~/.ssh/authorized_keys` file based on the `man_user_setup_ssh_key` var
 * A custom compiled version of Python 2 and 3 installed alongside the system Python
-    * By default the versions are set by `python2_version` and `python3_version` which are `2.7.14` and `3.6.3` respectively
-    * These are located in `/usr/local/bin/python2.7` and `/usr/local/bin/python3.6`
-    * Attempts to symlink each altinstall with the builting system selinux bindings but this dependent on the distro
+  * By default the versions are set by `python2_version` and `python3_version` which are `2.7.14` and `3.6.3` respectively
+  * These are located in `/usr/local/bin/python2.7` and `/usr/local/bin/python3.6`
+  * Attempts to symlink each altinstall with the builting system selinux bindings but this dependent on the distro
 * A venv for both the Python 2 and Python 3 setup
-    * Ansible and the pywinrm dependencies are installed in each venv
-    * These are located at `~/ansible-py27` and `~/ansible-py36`
-    * The Python 3 venv is set to active on logon in the`~/.bashrc` file
+  * Ansible and the pywinrm dependencies are installed in each venv
+  * These are located at `~/ansible-py27` and `~/ansible-py36`
+  * The Python 3 venv is set to active on logon in the`~/.bashrc` file
 * Kerberos workstation packages installed and configured to communicate with the realm and kdc specified by the `man_kerberos_*` vars
 * dnsmasq installed and setup to automatically lookup hosts with the domain specified by `man_kerberos_realm`
 

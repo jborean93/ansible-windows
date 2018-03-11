@@ -1,12 +1,15 @@
 # Scripts
+
 This repo contains the following scripts
 
 ## Upgrade-PowerShell.ps1
+
 The `Upgrade-PowerShell.ps1` script is used to upgrade the installed version of
 PowerShell on a Windows host to a newer version. Ansible requires at least
 version `3.0` to be install but some modules may require a newer version.
 
 This script can be run on the following hosts
+
 * Windows Server 2008 (with SP2 installed)
 * Windows Server 2008 R2 (with SP1 installed)
 * Windows Server 2012
@@ -18,6 +21,7 @@ This script can be run on the following hosts
 
 When calling the script, the `-Version` parameter is used to specify the target
 PowerShell version to install. The versions that can be set as the target are:
+
 * 3.0
 * 4.0
 * 5.1 (default if not set)
@@ -73,6 +77,7 @@ Remove-ItemProperty -Path $reg_winlogon_path -Name DefaultPassword -ErrorAction 
 ```
 
 ## Install-WMF3Hotfix.ps1
+
 When running on PowerShell v3.0, there is a bug with the WinRM service that
 limits the amount of memory available to WinRM. Without this hotfix installed,
 Ansible will fail to execute certain commands on the Windows host.
@@ -80,7 +85,8 @@ Ansible will fail to execute certain commands on the Windows host.
 The script will install the WinRM hotfix [KB2842230](https://support.microsoft.com/en-us/help/2842230/-out-of-memory-error-on-a-computer-that-has-a-customized-maxmemorypers)
 which fixes the memory issues that occur when running over WinRM with WMF 3.0.
 
-The script will;
+The script will:
+
 1. Detect if running on PS version 3.0 and exit if it is not
 2. Check if `KB2842230` is already installed and exit if it is
 3. Download the hotfix from Microsoft server's based on the OS version

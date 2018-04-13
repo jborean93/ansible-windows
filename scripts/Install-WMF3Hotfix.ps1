@@ -8,8 +8,8 @@
     Jordan Borean 2017
 .TAGS
     PowerShell,Ansible,WinRM,WMF,Hotfix
-.LICENSEURI https://github.com/jborean93/ansible-windows-scripts/blob/master/LICENSE
-.PROJECTURI https://github.com/jborean93/ansible-windows-scripts
+.LICENSEURI https://github.com/jborean93/ansible-windows/blob/master/LICENSE
+.PROJECTURI https://github.com/jborean93/ansible-windows
 .RELEASENOTES
     Version 1.0: 2017-09-27
         Initial script created
@@ -89,7 +89,7 @@ Function Extract-Zip($zip, $dest) {
     }
 }
 
-$tmp_dir = "$env:SystemDrive\temp"
+$tmp_dir = $env:temp
 $kb = "KB2842230"
 if ($PSVersionTable.PSVersion.Major -ne 3) {
     Write-Verbose -Message "$kb is only applicable with Powershel v3, no action required"
@@ -109,22 +109,22 @@ $os_version = [Environment]::OSVersion.Version
 $host_string = "$($os_version.Major).$($os_version.Minor)-$($env:PROCESSOR_ARCHITECTURE)"
 switch($host_string) {
     "6.0-x86" {
-        $url = "http://hotfixv4.microsoft.com/Windows%20Vista/sp3/Fix467401/6000/free/464091_intl_i386_zip.exe"
+        $url = "https://hotfixv4.trafficmanager.net/Windows%20Vista/sp3/Fix467401/6000/free/464091_intl_i386_zip.exe"
     }
     "6.0-AMD64" {
-        $url = "http://hotfixv4.microsoft.com/Windows%20Vista/sp3/Fix467401/6000/free/464090_intl_x64_zip.exe"
+        $url = "https://hotfixv4.trafficmanager.net/Windows%20Vista/sp3/Fix467401/6000/free/464090_intl_x64_zip.exe"
     }
     "6.1-x86" {
-        $url = "http://hotfixv4.microsoft.com/Windows%207/Windows%20Server2008%20R2%20SP1/sp2/Fix467402/7600/free/463983_intl_i386_zip.exe"
+        $url = "https://hotfixv4.trafficmanager.net/Windows%207/Windows%20Server2008%20R2%20SP1/sp2/Fix467402/7600/free/463983_intl_i386_zip.exe"
     }
     "6.1-AMD64" {
-        $url = "http://hotfixv4.microsoft.com/Windows%207/Windows%20Server2008%20R2%20SP1/sp2/Fix467402/7600/free/463984_intl_x64_zip.exe"
+        $url = "https://hotfixv4.trafficmanager.net/Windows%207/Windows%20Server2008%20R2%20SP1/sp2/Fix467402/7600/free/463984_intl_x64_zip.exe"
     }
     "6.2-x86" {
-        $url = "http://hotfixv4.microsoft.com/Windows%208%20RTM/nosp/Fix452763/9200/free/463940_intl_i386_zip.exe"
+        $url = "https://hotfixv4.trafficmanager.net/Windows%208%20RTM/nosp/Fix452763/9200/free/463940_intl_i386_zip.exe"
     }
     "6.2-AMD64" {
-        $url = "http://hotfixv4.microsoft.com/Windows%208%20RTM/nosp/Fix452763/9200/free/463941_intl_x64_zip.exe"
+        $url = "https://hotfixv4.trafficmanager.net/Windows%208%20RTM/nosp/Fix452763/9200/free/463941_intl_x64_zip.exe"
     }
 }
 $filename = $url.Split("/")[-1]

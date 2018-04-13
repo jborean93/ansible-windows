@@ -1,5 +1,4 @@
-# Ansible files
 *.retry
-
-# Vagrant files
 */.vagrant/*
+*.log
+*.DS_Store

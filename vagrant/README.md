@@ -69,14 +69,23 @@ use another port and display that in the output.
 ## Domain Setup Example
 
 While the above example can set up a single Windows instance, if you want to
-run Ansible over multiple Windows hosts in a domain, you can use the
+run Ansible over multiple Windows hosts in a domain, you can use the existing
 Vagrantfile in this folder to set this up for you.
 
-The 3 files that you need to run this process are;
+The 4 files that you need to run this process are;
 
 * `Vagrantfile`: The Vagrant file that reads the settings from the inventory and set's up the hosts that are required
 * `inventory.yml`: The Ansible inventory file that defines how the hosts will be set up
 * `main.yml`: Run after the hosts are provisioned to create a domain controller and join the other hosts to the domain
+* `roles`: A bunch of roles used by `main.yml` to create the environment
+
+This process will create a domain environment will the following set up;
+
+* A domain user, defined in `inventory.yml`, that is part of the `Domain Admins` group
+* An Active Directory Certificate Services (AD CS) install with auto enrollment of server certificates
+* A local copy at `ca_chain.pem` that is the root certificate used by AD CS to sign each certificate
+* The child hosts, connected to the domain
+* The WinRM HTTPS listeners use the certificate that was issued by AD CS
 
 The existing `inventory.yml` file is set up to create a host for each major
 Windows Server releases that are supported by Ansible + an extra domain
@@ -98,5 +107,5 @@ A few tips and tricks;
 Depending on the number of hosts you have defined in your `inventory.yml` file,
 the provisioning process can take some time to complete as Vagrant/VirtualBox
 does not support provisioning in parallel. Either give it more time or reduce
-the number of hosts that are defined in the `` section of the inventory.
-
+the number of hosts that are defined in the `domain_children` section of the
+inventory.

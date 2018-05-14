@@ -7,25 +7,22 @@ all:
           vagrant_box: jborean93/WindowsServer2016
     domain_children:
       hosts:
-#        SERVER2008:
-#          ansible_host: 192.168.56.11
-#          vagrant_box: jborean93/WindowsServer2008-x64
-#          opt_domain_join_is_longhorn: yes
-#        SERVER2008R2:
-#          ansible_host: 192.168.56.12
-#          vagrant_box: jborean93/WindowsServer2008R2
-#        SERVER2012:
-#          ansible_host: 192.168.56.13
-#          vagrant_box: jborean93/WindowsServer2012
+        SERVER2008:
+          ansible_host: 192.168.56.11
+          vagrant_box: jborean93/WindowsServer2008-x64
+          opt_domain_join_is_longhorn: yes
+        SERVER2008R2:
+          ansible_host: 192.168.56.12
+          vagrant_box: jborean93/WindowsServer2008R2
+        SERVER2012:
+          ansible_host: 192.168.56.13
+          vagrant_box: jborean93/WindowsServer2012
         SERVER2012R2:
           ansible_host: 192.168.56.14
           vagrant_box: jborean93/WindowsServer2012R2
         SERVER2016:
           ansible_host: 192.168.56.15
           vagrant_box: jborean93/WindowsServer2016
-        SERVER1803:
-          ansible_host: 192.168.56.16
-          vagrant_box: jborean93/WindowsServer1803
   vars:
     ansible_user: vagrant
     ansible_password: vagrant

@@ -22,86 +22,34 @@
       msg: Failed to get the network connection name
     when: network_connection_name.stdout_lines|count != 1
 
-  - name: make sure network connection is set to private
-    win_shell: |
-      $manager = [Activator]::CreateInstance([Type]::GetTypeFromCLSID('DCB00C01-570F-4A9B-8D69-199FDBA5723B'))
-      $connections = $manager.GetNetworkConnections()
-      $connections | ForEach-Object { $_.GetNetwork().SetCategory(1) }
-
-- name: create Domain Controller
+- name: create Domain Controller and set AD CS
   hosts: controller
   gather_facts: no
-  tasks:
-  - name: set the DNS for the private adapter to localhost
-    win_dns_client:
-      adapter_names: '{{network_connection_name.stdout_lines[0]}}'
-      ipv4_addresses: 127.0.0.1
-
-  - name: ensure domain exists and DC is promoted as domain controllers
-    win_domain:
-      dns_domain_name: '{{domain_name}}'
-      safe_mode_password: '{{domain_safe_mode_password}}'
-    register: domain_result
-
-  - name: reboot DC if required
-    win_reboot:
-    when: domain_result.reboot_required
-
-  - name: create domain vagrant user
-    win_domain_user:
-      name: '{{domain_user_name}}'
-      upn: '{{domain_user_name}}@{{domain_name}}'
-      description: Vagrant Domain Account
-      password: '{{domain_user_pass}}'
-      password_never_expires: yes
-      groups:
-      - Domain Admins
-      state: present
-    register: domain_user_result
-    retries: 30
-    delay: 15
-    until: domain_user_result is successful  # after the reboot this will take a while to succeed
-
-  - name: test out domain user
-    win_command: whoami.exe
-    changed_when: false
-    become: yes
-    become_user: '{{domain_user_name}}@{{domain_name}}'
-    become_method: runas
+  roles:
+  - name: domain-setup
     vars:
-      ansible_become_password: '{{domain_user_pass}}'
+      man_domain_setup_network_name: '{{network_connection_name.stdout_lines[0]}}'
+  - name: adcs-enrollment
+  - name: adcs-winrm
+    vars:
+      man_adcs_winrm_is_dc: yes
+
+  post_tasks:
+  - name: create local file based on the certificate chain PEM content
+    copy:
+      content: '{{out_adcs_enrollment_chain_thumbprint}}'
+      dest: ca_chain.pem
+    delegate_to: localhost
+    run_once: yes
 
 - name: connect the other Windows hosts to the domain
   hosts: domain_children
   gather_facts: no
-  tasks:
-  - name: set the DNS for the private adapter to point to DC
-    win_dns_client:
-      adapter_names: '{{network_connection_name.stdout_lines[0]}}'
-      ipv4_addresses: "{{hostvars['DC01']['ansible_host']}}"
-
-  - name: set the adapter priority to 1 for Server 2008
-    win_command: netsh interface ip set interface interface="{{network_connection_name.stdout_lines[0]}}" metric=1
-    when: "'WindowsServer2008' in vagrant_box"
-
-  - name: join host to domain
-    win_domain_membership:
-      dns_domain_name: '{{domain_name}}'
-      domain_admin_user: '{{domain_user_name}}@{{domain_name}}'
-      domain_admin_password: '{{domain_user_pass}}'
-      state: domain
-    register: domain_member_result
-
-  - name: reboot host to finalise domain join
-    win_reboot:
-    when: domain_member_result.reboot_required
-
-  - name: test out domain user
-    win_command: whoami.exe
-    changed_when: false
-    become: yes
-    become_user: '{{domain_user_name}}@{{domain_name}}'
-    become_method: runas
+  roles:
+  - name: domain-join
     vars:
-      ansible_become_password: '{{domain_user_pass}}'
-
+      man_domain_join_network_name: '{{network_connection_name.stdout_lines[0]}}'
+      man_domain_join_dc_ip: "{{hostvars[groups.controller[0]].ansible_host}}"
+  - name: adcs-winrm
+    vars:
+      man_adcs_winrm_is_dc: no

@@ -1,0 +1,51 @@
+---
+- name: assert mandatory values are set
+  assert:
+    that:
+    - man_adcs_winrm_is_dc is defined
+
+- name: refresh the local GPO to ensure we have the latest certs
+  win_command: gpupdate /force
+
+# the logic to get the cert thumbprint differs from the DCs and other hosts
+- name: get certificate thumbprint to use for new WSMan listener on the domain controller
+  win_shell: (Get-ChildItem -Path Cert:\LocalMachine\My\ | Where-Object { $_.PolicyId -ne $null {{(man_adcs_winrm_is_dc|bool)|ternary('-and "Client Authentication" -in ($_.EnhancedKeyUsageList).FriendlyName -and "Server Authentication" -in ($_.EnhancedKeyUsageList).FriendlyName ', '')}}}).Thumbprint
+  register: pri_adcs_winrm_enrolled_cert_thumbprint
+  changed_when: no
+
+- name: get the current thumbprint used in the HTTPS listener
+  win_shell: |
+    $https_listener = Get-Item -Path WSMan:\localhost\Listener\* | Where-Object { "Transport=HTTPS" -in $_.Keys }
+    $address = ($https_listener.Keys | Where-Object { $_.StartsWith("Address=") } ).Split("=")[-1]
+    $wsman_instance = Get-WSManInstance -ResourceURI winrm/config/listener -SelectorSet @{Transport="HTTPS"; Address=$address}
+    $wsman_instance.CertificateThumbprint
+  register: pri_adcs_winrm_https_listener
+  changed_when: no
+
+- block:
+  - name: change the certificate thumbprint
+    win_shell: |
+      $selector_set = @{
+          Address = "*"
+          Transport = "HTTPS"
+      }
+      $value_set = @{
+          CertificateThumbprint = "{{pri_adcs_winrm_enrolled_cert_thumbprint.stdout_lines[0]}}"
+          Enabled = $true
+      }
+      Get-ChildItem -Path WSMan:\localhost\Listener | Where-Object { $_.Keys -contains "Transport=HTTPS" } | Remove-Item -Recurse -Force
+      New-WSManInstance -ResourceURI winrm/config/listener -SelectorSet $selector_set -ValueSet $value_set
+    register: pri_adcs_change_winrm_listener_async
+    async: 30
+    poll: 0
+
+  - name: wait 5 seconds to make sure connection is back online
+    pause:
+      seconds: 5
+
+  - name: verify connection is back online
+    async_status:
+      jid: '{{pri_adcs_change_winrm_listener_async.ansible_job_id}}'
+    register: pri_adcs_winrm_async_status
+    until: pri_adcs_winrm_async_status.finished
+  when: pri_adcs_winrm_https_listener.stdout_lines[0] not in pri_adcs_winrm_enrolled_cert_thumbprint.stdout_lines

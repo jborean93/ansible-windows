@@ -7,21 +7,25 @@ all:
           vagrant_box: jborean93/WindowsServer2016
     domain_children:
       hosts:
-        SERVER2008:
-          ansible_host: 192.168.56.11
-          vagrant_box: jborean93/WindowsServer2008-x64
-        SERVER2008R2:
-          ansible_host: 192.168.56.12
-          vagrant_box: jborean93/WindowsServer2008R2
-        SERVER2012:
-          ansible_host: 192.168.56.13
-          vagrant_box: jborean93/WindowsServer2012
+#        SERVER2008:
+#          ansible_host: 192.168.56.11
+#          vagrant_box: jborean93/WindowsServer2008-x64
+#          opt_domain_join_is_longhorn: yes
+#        SERVER2008R2:
+#          ansible_host: 192.168.56.12
+#          vagrant_box: jborean93/WindowsServer2008R2
+#        SERVER2012:
+#          ansible_host: 192.168.56.13
+#          vagrant_box: jborean93/WindowsServer2012
         SERVER2012R2:
           ansible_host: 192.168.56.14
           vagrant_box: jborean93/WindowsServer2012R2
         SERVER2016:
           ansible_host: 192.168.56.15
           vagrant_box: jborean93/WindowsServer2016
+        SERVER1803:
+          ansible_host: 192.168.56.16
+          vagrant_box: jborean93/WindowsServer1803
   vars:
     ansible_user: vagrant
     ansible_password: vagrant
@@ -29,10 +33,17 @@ all:
     ansible_port: 5986
     ansible_winrm_transport: basic
     ansible_winrm_server_cert_validation: ignore
-    domain_name: domain.local
-    domain_safe_mode_password: VagrantPass1
-    domain_user_name: vagrant-domain
-    domain_user_pass: VagrantPass1
+
+    # role specific variables
+    man_domain_setup_domain_name: domain.local
+    man_domain_setup_safe_mode_password: VagrantPass1
+    man_domain_setup_username: vagrant-domain
+    man_domain_setup_password: VagrantPass1
+
+    man_domain_join_domain_name: domain.local
+    man_domain_join_username: vagrant-domain@DOMAIN.LOCAL
+    man_domain_join_password: VagrantPass1
+
     # used by Vagrant for port forwarding
     # the format is 29xyy where x is the protocol and
     # yy is the number of the host.

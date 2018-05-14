@@ -1,0 +1,112 @@
+# These steps are following the ones shown at just in code form
+# https://www.virtuallyboring.com/setup-microsoft-active-directory-certificate-services-ad-cs/
+---
+- name: ensure the ADCS feature is installed
+  win_feature:
+    name: AD-Certificate
+    state: present
+  register: pri_adcs_enrollment_install
+
+- name: reboot host if required
+  win_reboot:
+  when: pri_adcs_enrollment_install.reboot_required
+
+- name: configure AD CS certification authority
+  win_shell: Install-AdcsCertificationAuthority -CAType EnterpriseRootCa -CryptoProviderName "RSA#Microsoft Software Key Storage Provider" -KeyLength 2048 -HashAlgorithmName SHA256 -Force
+  register: pri_adcs_enrollment_config
+  changed_when: pri_adcs_enrollment_config.rc == 0
+  failed_when:
+  - pri_adcs_enrollment_config.rc != 0
+  - '"The Certification Authority is already installed" not in (pri_adcs_enrollment_config.stderr|regex_replace("\r\n", ""))'
+  become: yes
+  become_user: SYSTEM
+  become_method: runas
+
+# NOTE: the template data was manually exported from another AD CS server where
+# I manually crafted the template. Saves a lot of code to build the template
+# through Ansible, also a lot of headaches to find out how to structure the
+# template
+- name: import the certificate template into AD CS
+  win_adcs_template:
+    templates: '{{lookup("template", "adcs_template.xml.j2")}}'
+    dacl:
+    - user: Authenticated Users
+      rights:
+      - list_child
+      - read_prop
+      - list_object
+      - read_control
+      qualifier: AccessAllowed
+    - user: Domain Computers
+      rights:
+      - list_child
+      - read_prop
+      - read_control
+      qualifier: AccessAllowed
+    - user: Domain Admins
+      rights:
+      - create_child
+      - delete_child
+      - list_child
+      - self_write
+      - read_prop
+      - write_prop
+      - delete_tree
+      - list_object
+      - delete
+      - read_control
+      - write_dac
+      - write_owner
+      qualifier: AccessAllowed
+    - user: Enterprise Admins
+      rights:
+      - create_child
+      - delete_child
+      - list_child
+      - self_write
+      - read_prop
+      - write_prop
+      - delete_tree
+      - list_object
+      - delete
+      - read_control
+      - write_dac
+      - write_owner
+      qualifier: AccessAllowed
+    - user: Domain Computers
+      rights:
+      - control_access
+      type: auto_enroll
+      qualifier: AccessAllowed
+    - user: Domain Computers
+      rights:
+      - read_prop
+      - write_prop
+      - control_access
+      type: enroll
+      qualifier: AccessAllowed
+    - user: Domain Admins
+      rights:
+      - read_prop
+      - write_prop
+      - control_access
+      type: enroll
+      qualifier: AccessAllowed
+    - user: Enterprise Admins
+      rights:
+      - read_prop
+      - write_prop
+      - control_access
+      type: enroll
+      qualifier: AccessAllowed
+    owner: Enterprise Admins
+    group: Enterprise Admins
+
+- name: check if the template has already been set in CA
+  win_shell: if (Get-CATemplate | Where-Object { $_.Name -eq "{{pri_adcs_enrollment_template_name}}" }) { $true } else { $false }
+  register: pri_adcs_enrollment_template_in_ca
+  changed_when: no
+
+- name: add imported certificate template to AD CS
+  win_shell: Add-CATemplate -Name {{pri_adcs_enrollment_template_name|quote}} -Force
+  when: not pri_adcs_enrollment_template_in_ca.stdout_lines[0]|bool

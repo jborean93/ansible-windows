@@ -1,0 +1,49 @@
+---
+- name: assert mandatory variables have been set
+  assert:
+    that:
+    - man_domain_setup_network_name is defined
+    - man_domain_setup_domain_name is defined
+    - man_domain_setup_safe_mode_password is defined
+    - man_domain_setup_username is defined
+    - man_domain_setup_password is defined
+
+- name: set the DNS for the specified adapter to localhost
+  win_dns_client:
+    adapter_name: '{{man_domain_setup_network_name}}'
+    ipv4_addresses: 127.0.0.1
+
+- name: ensure domain exists and DC is promoted as a domain controller
+  win_domain:
+    dns_domain_name: '{{man_domain_setup_domain_name}}'
+    safe_mode_password: '{{man_domain_setup_safe_mode_password}}'
+  register: pri_domain_setup_install_result
+
+- name: reboot DC if required after install
+  win_reboot:
+  when: pri_domain_setup_install_result.reboot_required
+
+- name: create domain username
+  win_domain_user:
+    name: '{{man_domain_setup_username}}'
+    upn: '{{man_domain_setup_username}}@{{man_domain_setup_domain_name}}'
+    description: '{{man_domain_setup_username}} Domain Account'
+    password: '{{man_domain_setup_password}}'
+    password_never_expires: yes
+    groups:
+    - Domain Admins
+    state: present
+  register: pri_domain_setup_create_user_result
+  # after reboot, the netlogon service isn't available immediately, we need
+  # to retry until this succeeeds
+  retries: 30
+  delay: 15
+  until: pri_domain_setup_create_user_result is successful
+
+- name: test out domain user that was created
+  win_whoami:
+  become: yes
+  become_method: runas
+  vars:
+    ansible_become_user: '{{man_domain_setup_username}}@{{man_domain_setup_domain_name}}'
+    ansible_become_pass: '{{man_domain_setup_password}}'

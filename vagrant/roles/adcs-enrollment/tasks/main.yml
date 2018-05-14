@@ -1,0 +1,21 @@
+---
+- name: setup up AD CS and create auto enroll template
+  include_tasks: adcs_template.yml
+
+- name: import the auto enroll GPO policy
+  include_tasks: gpo.yml
+
+- name: get the PEM encoded cert chain from ADCS and store as a variable
+  win_shell: |
+    $raw_ca_name = (&certutil.exe -CAInfo name)[0]
+    $raw_ca_name -match "CA Name: (.*)" > $null
+    $ca_name = $matches[1]
+    $certificate = Get-ChildItem Cert:\LocalMachine\Root | Where-Object { $_.Subject.StartsWith("CN=$ca_name") }
+    $cert_bytes = $certificate.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Cert)
+    [System.Convert]::ToBase64String($cert_bytes, [System.Base64FormattingOptions]::InsertLineBreaks)
+  register: pri_adcs_enrollment_chain_thumbprint_raw
+  changed_when: no
+
+- name: set PEM encoded cert as fact with correct headers
+  set_fact:
+    out_adcs_enrollment_chain_thumbprint: "-----BEGIN CERTIFICATE-----\n{{pri_adcs_enrollment_chain_thumbprint_raw.stdout_lines|join('\n')}}\n-----END CERTIFICATE-----"

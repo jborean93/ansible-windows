@@ -13,7 +13,7 @@ all:
           ansible_package_name: 'yum'
         FEDORA27:
           ansible_host: 192.168.56.23
-          vagrant_box: generic/fedora27
+          vagrant_box: generic/fedora28
           ansible_package_name: 'dnf'
   vars:
     man_user_setup_user: ansible

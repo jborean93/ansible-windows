@@ -105,7 +105,7 @@ if ($hotfix_installed -ne $null) {
 if (-not (Test-Path -Path $tmp_dir)) {
     New-Item -Path $tmp_dir -ItemType Directory > $null
 }
-$os_version = [Environment]::OSVersion.Version
+$os_version = [Version](Get-Item -Path "$env:SystemRoot\System32\kernel32.dll").VersionInfo.ProductVersion
 $host_string = "$($os_version.Major).$($os_version.Minor)-$($env:PROCESSOR_ARCHITECTURE)"
 switch($host_string) {
     "6.0-x86" {
@@ -127,6 +127,7 @@ switch($host_string) {
         $url = "https://hotfixv4.trafficmanager.net/Windows%208%20RTM/nosp/Fix452763/9200/free/463941_intl_x64_zip.exe"
     }
 }
+
 $filename = $url.Split("/")[-1]
 $compressed_file = "$tmp_dir\$($filename).zip"
 Download-File -url $url -path $compressed_file
@@ -136,6 +137,7 @@ if ($file -eq $null) {
     Write-Error -Message "unable to find extracted msu file for hotfix KB"
     exit 1
 }
+
 $exit_code = Run-Process -executable $file.FullName -arguments "/quiet /norestart"
 if ($exit_code -eq 3010) {
     Write-Verbose "need to restart computer after hotfix $kb install"

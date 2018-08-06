@@ -241,7 +241,7 @@ if ($current_ps_version -eq [version]$version) {
     exit 0
 }
 
-$os_version = [System.Environment]::OSVersion.Version
+$os_version = [Version](Get-Item -Path "$env:SystemRoot\System32\kernel32.dll").VersionInfo.ProductVersion
 $architecture = $env:PROCESSOR_ARCHITECTURE
 if ($architecture -eq "AMD64") {
     $architecture = "x64"

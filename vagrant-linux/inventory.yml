@@ -24,6 +24,6 @@ all:
     man_kerberos_realm: domain.local
     man_kerberos_kdc_ip: 192.168.56.10
     man_kerberos_kdc_hostname: dc01
-    python2_version: 2.7.14
-    python3_version: 3.6.3
+    python2_version: 2.7.15
+    python3_version: 3.7.0
 

@@ -12,8 +12,8 @@
   with_items:
   - name: 27
     python: /usr/local/bin/python2.7
-  - name: 36
-    python: /usr/local/bin/python3.6
+  - name: 37
+    python: /usr/local/bin/python3.7
 
 - name: download ansible from source
   git:
@@ -25,7 +25,7 @@
 - name: ensure Ansible python 3 venv is set to run in bash profile
   lineinfile:
     path: ~/.bashrc
-    line: source ~/ansible-py36/bin/activate
+    line: source ~/ansible-py37/bin/activate
 
 - name: ensure Ansible is activated in bash profile
   lineinfile:

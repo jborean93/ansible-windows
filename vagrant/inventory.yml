@@ -41,6 +41,8 @@ all:
     man_domain_join_username: vagrant-domain@DOMAIN.LOCAL
     man_domain_join_password: VagrantPass1
 
+    man_adcs_winrm_domain: domain.local
+
     # used by Vagrant for port forwarding
     # the format is 29xyy where x is the protocol and
     # yy is the number of the host.

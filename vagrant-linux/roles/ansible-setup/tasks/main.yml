@@ -3,7 +3,13 @@
   pip:
     name:
     - ansible
-    - pywinrm[kerberos,credssp]
+    - pywinrm
+    - requests-kerberos
+    - pypsrp
+    - requests-credssp
+    - gssapi
+    #- pywinrm[kerberos,credssp]
+    #- pypsrp[kerberos,credssp]
     state: latest
     virtualenv: ~/ansible-py{{item.name}}
     virtualenv_command: /usr/local/bin/virtualenv

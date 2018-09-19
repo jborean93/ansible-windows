@@ -3,13 +3,18 @@
   assert:
     that:
     - man_adcs_winrm_is_dc is defined
+    - man_adcs_winrm_domain is defined
 
 - name: refresh the local GPO to ensure we have the latest certs
   win_command: gpupdate /force
 
+- name: set certificate issuer name
+  set_fact:
+    pri_adcs_winrm_issuer: CN=domain-{{groups['controller'][0]}}-CA, DC={{man_adcs_winrm_domain.split(".")|join(", DC=")}}
+
 # the logic to get the cert thumbprint differs from the DCs and other hosts
 - name: get certificate thumbprint to use for new WSMan listener on the domain controller
-  win_shell: (Get-ChildItem -Path Cert:\LocalMachine\My\ | Where-Object { $_.PolicyId -ne $null {{(man_adcs_winrm_is_dc|bool)|ternary('-and "Client Authentication" -in ($_.EnhancedKeyUsageList).FriendlyName -and "Server Authentication" -in ($_.EnhancedKeyUsageList).FriendlyName ', '')}}}).Thumbprint
+  win_shell: (Get-ChildItem -Path Cert:\LocalMachine\My\ | Where-Object { $_.Issuer -eq "{{pri_adcs_winrm_issuer}}" {{(man_adcs_winrm_is_dc|bool)|ternary('-and "Client Authentication" -in ($_.EnhancedKeyUsageList).FriendlyName -and "Server Authentication" -in ($_.EnhancedKeyUsageList).FriendlyName -and "KDC Authentication" -notin ($_.EnhancedKeyUsageList).FriendlyName', '')}}}).Thumbprint
   register: pri_adcs_winrm_enrolled_cert_thumbprint
   changed_when: no
 

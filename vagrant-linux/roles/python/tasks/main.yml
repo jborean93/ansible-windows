@@ -13,6 +13,7 @@
     - sqlite-devel
     - bzip2-devel
     - readline-devel
+    - libffi-devel
     - libselinux-python
     state: present
   when: ansible_package_name == 'yum'
@@ -26,6 +27,7 @@
     - sqlite-devel
     - bzip2-devel
     - readline-devel
+    - libffi-devel
     - '{% if man_python_version[:1] == 2 %}libselinux-python{% else %}libselinux-python3{% endif %}'
   when: ansible_package_name == 'dnf'
 

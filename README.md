@@ -4,6 +4,12 @@ Ansible with Windows hosts.
 
 Further scripts and utilities may be added in the future as required.
 
+## Playbooks
+
+Contains a collection of playbooks that are useful when using Ansible with
+Windows. The README page of each folder has more details on the playbook and
+what they are for.
+
 ## Scripts
 There are a few scripts in the `scripts` folder that can be used to do things
 like upgrade PowerShell to a certain version. The README page of that folder

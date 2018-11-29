@@ -1,0 +1,26 @@
+---
+- name: cleanup and restrict PowerShell logs
+  hosts: windows
+  gather_facts: no
+
+  tasks:
+  - name: restrict the Microsoft-Windows-PowerShell/Operational to privileged users
+    win_shell: |
+      $key = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WINEVT\Channels\Microsoft-Windows-PowerShell/Operational"
+      $sddl = "O:BAG:SYD:(A;;0xf0005;;;SY)(A;;0x5;;;BA)(A;;0x1;;;S-1-5-32-573)"
+      $current = (Get-ItemProperty -Path $key -Name ChannelAccess).ChannelAccess
+      if ($current -ne $sddl) {
+          Set-ItemProperty -Path $key -Name ChannelAccess -Value $sddl
+          "changed"
+      } else {
+          "no change"
+      }
+    register: restrict_result
+    changed_when: restrict_result.stdout == "changed\r\n"
+
+  - name: clear out the Microsoft-Windows-PowerShell/Operational log
+    win_shell: |
+      $log = "Microsoft-Windows-PowerShell/Operational"
+      if (Get-WinEvent -ListLog $log -ErrorAction SilentlyContinue) {
+          [System.Diagnostics.Eventing.Reader.EventLogSession]::GlobalSession.ClearLog($log)
+      }

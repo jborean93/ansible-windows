@@ -92,7 +92,7 @@ Function Extract-Zip($zip, $dest) {
 $tmp_dir = $env:temp
 $kb = "KB2842230"
 if ($PSVersionTable.PSVersion.Major -ne 3) {
-    Write-Verbose -Message "$kb is only applicable with Powershel v3, no action required"
+    Write-Verbose -Message "$kb is only applicable with Powershell v3, no action required"
     exit 0
 }
 

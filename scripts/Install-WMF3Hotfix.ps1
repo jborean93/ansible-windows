@@ -56,7 +56,7 @@ Function Run-Process($executable, $arguments) {
     $psi.Arguments = $arguments
     Write-Verbose -Message "starting new process '$executable $arguments'"
     $process.Start() | Out-Null
-    
+
     $process.WaitForExit() | Out-Null
     $exit_code = $process.ExitCode
     Write-Verbose -Message "process completed with exit code '$exit_code'"
@@ -108,23 +108,25 @@ if (-not (Test-Path -Path $tmp_dir)) {
 $os_version = [Version](Get-Item -Path "$env:SystemRoot\System32\kernel32.dll").VersionInfo.ProductVersion
 $host_string = "$($os_version.Major).$($os_version.Minor)-$($env:PROCESSOR_ARCHITECTURE)"
 switch($host_string) {
+    # These URLS point to the Ansible Core CI S3 bucket, MS no longer provide a link to Server 2008 so we need to
+    # rely on this URL. There are no guarantees this will stay up in the future.
     "6.0-x86" {
-        $url = "https://hotfixv4.trafficmanager.net/Windows%20Vista/sp3/Fix467401/6000/free/464091_intl_i386_zip.exe"
+        $url = "https://s3.amazonaws.com/ansible-ci-files/hotfixes/KB2842230/464091_intl_i386_zip.exe"
     }
     "6.0-AMD64" {
-        $url = "https://hotfixv4.trafficmanager.net/Windows%20Vista/sp3/Fix467401/6000/free/464090_intl_x64_zip.exe"
+        $url = "https://s3.amazonaws.com/ansible-ci-files/hotfixes/KB2842230/464090_intl_x64_zip.exe"
     }
     "6.1-x86" {
-        $url = "https://hotfixv4.trafficmanager.net/Windows%207/Windows%20Server2008%20R2%20SP1/sp2/Fix467402/7600/free/463983_intl_i386_zip.exe"
+        $url = "https://s3.amazonaws.com/ansible-ci-files/hotfixes/KB2842230/463983_intl_i386_zip.exe"
     }
     "6.1-AMD64" {
-        $url = "https://hotfixv4.trafficmanager.net/Windows%207/Windows%20Server2008%20R2%20SP1/sp2/Fix467402/7600/free/463984_intl_x64_zip.exe"
+        $url = "https://s3.amazonaws.com/ansible-ci-files/hotfixes/KB2842230/463984_intl_x64_zip.exe"
     }
     "6.2-x86" {
-        $url = "https://hotfixv4.trafficmanager.net/Windows%208%20RTM/nosp/Fix452763/9200/free/463940_intl_i386_zip.exe"
+        $url = "https://s3.amazonaws.com/ansible-ci-files/hotfixes/KB2842230/463940_intl_i386_zip.exe"
     }
     "6.2-AMD64" {
-        $url = "https://hotfixv4.trafficmanager.net/Windows%208%20RTM/nosp/Fix452763/9200/free/463941_intl_x64_zip.exe"
+        $url = "https://s3.amazonaws.com/ansible-ci-files/hotfixes/KB2842230/463941_intl_x64_zip.exe"
     }
 }
 

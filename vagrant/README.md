@@ -21,6 +21,7 @@ and have been uploaded to the Vagrant Cloud service;
 * jborean93/WindowsServer2012
 * jborean93/WindowsServer2012R2
 * jborean93/WindowsServer2016
+* jborean93/WindowsServer2019
 
 See the repo url or [this blog post](http://www.bloggingforlogging.com/2017/11/23/using-packer-to-create-windows-images/)
 for more details.

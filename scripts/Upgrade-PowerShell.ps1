@@ -130,10 +130,11 @@ Function Reboot-AndResume {
 
     if ($username -and $password) {
         Set-AutoLogon -Enable
-    } elseif ($null -eq $Force) {
+    }
+    if ($Force -eq $false) {
         $reboot_confirmation = Read-Host -Prompt "need to reboot server to continue powershell upgrade, do you wish to proceed (y/n)"
         if ($reboot_confirmation -ne "y") {
-            $msg = "please reboot server manually and login to continue upgrade process, the script will restart on the next login automatically"
+            $msg = "please reboot server manually to continue upgrade process, the script will restart on the next login automatically"
             Write-Log -Message $msg
             exit 0
         }

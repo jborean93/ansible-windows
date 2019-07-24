@@ -152,7 +152,7 @@ To run this script, the following commands can be run:
 
 ```PowerShell
 $url = "https://raw.githubusercontent.com/junaidali/ansible-windows/master/scripts/Install-WMF5.vbs"
-$file = "$env:SystemDrive\temp\Install-WMF5.ps1"
+$file = "$env:SystemDrive\temp\Install-WMF5.vbs"
 
 (New-Object -TypeName System.Net.WebClient).DownloadFile($url, $file)
 cscript.exe $file

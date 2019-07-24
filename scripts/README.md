@@ -101,3 +101,56 @@ $file = "$env:SystemDrive\temp\Install-WMF3Hotfix.ps1"
 (New-Object -TypeName System.Net.WebClient).DownloadFile($url, $file)
 powershell.exe -ExecutionPolicy ByPass -File $file -Verbose
 ```
+
+## Install-WMF5.ps1
+
+The script will install the [Windows Management Framework 5.1](https://www.microsoft.com/en-us/download/details.aspx?id=54616). 
+
+**NOTE: This script WILL NOT run with using remote invocations, because of Microsoft's limitation with running Windows Updates remotely**
+
+The script will;
+1. Detect if running on PS version 3.0 and exit if it is not
+2. Check current version of Powershell installed. If the version is 5 or greater than exit
+3. Download WMF 5 from Microsoft server's based on the OS version
+4. Extract the .msu file from the downloaded hotfix
+5. Install the .msu silently
+6. Detect if a reboot is required and prompt whether the user wants to restart
+
+Once the install is complete, if the install process returns an exit
+code of `3010`, it will ask the user whether to restart the computer now
+or whether it will be done later.
+
+To run this script, the following commands can be run:
+
+```PowerShell
+$url = "https://raw.githubusercontent.com/junaidali/ansible-windows/master/scripts/Install-WMF5.ps1"
+$file = "$env:SystemDrive\temp\Install-WMF5.ps1"
+
+(New-Object -TypeName System.Net.WebClient).DownloadFile($url, $file)
+powershell.exe -ExecutionPolicy ByPass -File $file -Verbose
+```
+
+
+## Install-WMF5.vbs
+The script will install the [Windows Management Framework 5.1](https://www.microsoft.com/en-us/download/details.aspx?id=54616). 
+
+**NOTE: This script WILL RUN with using remote invocations as it uses dism to install the cab patches rather than wusa.exe**
+
+The script will;
+1. Check current version of Powershell installed. If the version is 5 or greater than exit
+2. Download WMF 5 from Microsoft server's based on the OS version
+3. Extract the .msu file from the downloaded hotfix
+4. Extract the .msu file to generate cabs
+5. Lookup PkgInstallOrder.txt within the extracted files. If it is found use the list of cabs in that file and install them sequentially using dism.exe
+6. If PkgInstallOrder.txt does not exists within the extracted files, use the cab file not named WSUSSCAN.CAB with the directory and install it using dism.exe
+6. Does not force reboot. Make sure to reboot after successful completion. This is by design, as the script will be used along with external provisioning tools like Terraform or Configuration tools like ansible that should be handling reboots.
+
+To run this script, the following commands can be run:
+
+```PowerShell
+$url = "https://raw.githubusercontent.com/junaidali/ansible-windows/master/scripts/Install-WMF5.vbs"
+$file = "$env:SystemDrive\temp\Install-WMF5.ps1"
+
+(New-Object -TypeName System.Net.WebClient).DownloadFile($url, $file)
+cscript.exe $file
+```

@@ -143,7 +143,10 @@ The script will;
 4. Extract the .msu file to generate cabs
 5. Lookup PkgInstallOrder.txt within the extracted files. If it is found use the list of cabs in that file and install them sequentially using dism.exe
 6. If PkgInstallOrder.txt does not exists within the extracted files, use the cab file not named WSUSSCAN.CAB with the directory and install it using dism.exe
-6. Does not force reboot. Make sure to reboot after successful completion. This is by design, as the script will be used along with external provisioning tools like Terraform or Configuration tools like ansible that should be handling reboots.
+6. Does not force reboot. 
+
+
+**NOTE: Make sure to reboot after successful completion. This is by design, as the script will be used along with external provisioning tools like Terraform or Configuration tools like ansible that should be handling reboots.**
 
 To run this script, the following commands can be run:
 

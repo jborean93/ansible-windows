@@ -4,6 +4,11 @@ Ansible with Windows hosts.
 
 Further scripts and utilities may be added in the future as required.
 
+## Requirements
+
+* [pywinrm](https://pypi.org/project/pywinrm)
+* [Ansible](https://github.com/ansible/ansible)
+
 ## Playbooks
 
 Contains a collection of playbooks that are useful when using Ansible with

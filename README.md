@@ -6,7 +6,7 @@ Further scripts and utilities may be added in the future as required.
 
 ## Requirements
 
-* [pywinrm](https://pypi.org/project/pywinrm)
+* [pywinrm > 0.3.0](https://pypi.org/project/pywinrm)
 * [Ansible](https://github.com/ansible/ansible)
 
 ## Playbooks

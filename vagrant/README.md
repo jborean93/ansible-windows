@@ -9,6 +9,7 @@ The following is required to run any of these steps;
 
 * Vagrant
 * VirtualBox
+* [pywinrm > 0.3.0](https://pypi.org/project/pywinrm)
 
 These examples use existing Windows Vagrant images for VirtualBox that have
 been created with the [packer-windoze](https://github.com/jborean93/packer-windoze)

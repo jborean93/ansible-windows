@@ -35,14 +35,25 @@ See https://github.com/jborean93/ansible-windows/tree/master/scripts for more
 details.
 .PARAMETER Verbose
     [switch] - Whether to display Verbose logs on the console
+.PARAMETER AutoReboot
+    [switch] - Enables reboot if needed, does not ask for confirmation
+.PARAMETER SkipReboot
+    [switch] - Skips system reboot, if it is managed by external process
 .EXAMPLE
     powershell.exe -ExecutionPolicy ByPass -File Install-WMF3Hotfix.ps1
 .EXAMPLE
     powershell.exe -ExecutionPolicy ByPass -File Install-WMF3Hotfix.ps1 -Verbose
+.EXAMPLE
+    powershell.exe -ExecutionPolicy ByPass -File Install-WMF3Hotfix.ps1 -Verbose -AutoReboot
+.EXAMPLE
+    powershell.exe -ExecutionPolicy ByPass -File Install-WMF3Hotfix.ps1 -Verbose -SkipReboot
 #>
 
 [CmdletBinding()]
-Param()
+Param(
+    [switch]$AutoReboot,
+    [switch]$SkipReboot
+)
 
 $ErrorActionPreference = "Stop"
 if ($verbose) {
@@ -143,7 +154,19 @@ if ($file -eq $null) {
 $exit_code = Run-Process -executable $file.FullName -arguments "/quiet /norestart"
 if ($exit_code -eq 3010) {
     Write-Verbose "need to restart computer after hotfix $kb install"
-    Restart-Computer -Confirm
+    if ($SkipReboot) {
+        Write-Verbose "skip reboot is enabled. no reboot will be performed."
+    }
+    else {
+        if ($AutoReboot) {
+            Write-Verbose "performing autoreboot"
+            Restart-Computer -Confirm:$false
+        }
+        else {
+            Write-Verbose "getting user confirmation to reboot"
+            Restart-Computer -Confirm
+        }
+    }
 } elseif ($exit_code -ne 0) {
     Write-Error -Message "failed to install hotfix $($kb): exit code $exit_code"
 } else {
